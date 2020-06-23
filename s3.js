@@ -1,21 +1,16 @@
 const { message, readJSON, sortSubnets } = require('./utils.js');
 
-const createLaunchConfiguration = (name) => {};
+const createBucket = (name) => {};
 
-const createLoadBalancer = (name) => {};
+const listBuckets = (name) => {};
 
-const createTargetGroup = (name) => {};
+const upload = (name) => {};
 
-const createListener = () => {};
+const addBucketPermissions = (name) => {};
 
-const createAutoScalingGroup = (name, lcName) => {};
+const addBucketPolices = (name) => {};
 
-const putScalingPolicy = (name) => {};
-
-
-
-
-
+const deleteBucket = (name) => {};
 
 
 /****
@@ -23,12 +18,11 @@ const putScalingPolicy = (name) => {};
 ****/
 const cli = require('./cli.js');
 switch (cli.command) {
-  case    'setup': cli.setup(); break;
-  case   'config': createLaunchConfiguration(cli.resourceName); break;
-  case     'load': createLoadBalancer(cli.resourceName); break;
-  case   'target': createTargetGroup(cli.resourceName); break;
-  case 'listener': createListener(); break;
-  case    'group': createAutoScalingGroup(cli.resourceName, cli.linkedResourceName); break;
-  case   'policy': putScalingPolicy(cli.resourceName); break;
-  default        : console.error('Not a valid command!'); break;
+  case 'create': createBucket(cli.resourceName); break;
+  case   'list': listBuckets(cli.resourceName); break;
+  case 'upload': upload(cli.resourceName); break;
+  case 'access': addBucketPermissions(cli.resourceName); break;
+  case 'policy': addBucketPolices(cli.resourceName); break;
+  case 'delete': deleteBucket(cli.resourceName); break;
+  default      : console.error('Not a valid command!'); break;
 }
