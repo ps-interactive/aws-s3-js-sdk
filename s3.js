@@ -8,7 +8,7 @@ const upload = (name) => {};
 
 const setBucketPermissions = (name) => {};
 
-const setBucketPolices = (name) => {};
+const setBucketPolicy = (name) => {};
 
 const deleteBucket = (name) => {};
 
@@ -22,7 +22,7 @@ switch (cli.command) {
   case   'list': listBuckets(cli.resourceName); break;
   case 'upload': upload(cli.resourceName); break;
   case 'access': setBucketPermissions(cli.resourceName); break;
-  case 'policy': setBucketPolices(cli.resourceName); break;
+  case 'policy': setBucketPolicy(cli.resourceName); break;
   case 'delete': deleteBucket(cli.resourceName); break;
   default      : console.error('Not a valid command!'); break;
 }
