@@ -10,7 +10,3 @@ const message = (err, data) => {
     console.log(`Success: ${json}`);
   }
 };
-
-const readJSON = (filename) => fs.existsSync(`json/${filename}.json`) ? JSON.parse(fs.readFileSync(`json/${filename}.json`)) : undefined;
-
-const sortSubnets = (subnets) => _.map(_.sortBy(subnets.Subnets, 'AvailabilityZone'), subnet => subnet.SubnetId);
