@@ -16,12 +16,12 @@ const listBuckets = () => {
 };
 
 const createBucket = (name) => {
-  const params = { "Bucket": name, "ACL": "public-read" };
+  const params = { "Bucket": name };
   s3.createBucket(params, message);
 };
 
-const upload = (name) => {
-  const uploadParams = { "Bucket": process.argv[2], "Key": "", "Body": "" };
+const upload = (bucket, name) => {
+  const uploadParams = { "Bucket": bucket, "Key": "", "Body": "" };
   const fileStream = fs.createReadStream(name);
   fileStream.on("error", err => console.log("File Error", err));
   
@@ -120,7 +120,7 @@ const cli = require('./cli.js');
 switch (cli.command) {
   case 'buckets': listBuckets(); break;
   case  'create': createBucket(cli.resourceName); break;
-  case  'upload': upload(cli.resourceName); break;
+  case  'upload': upload(cli.resourceName, cli.secondaryResource); break;
   case 'objects': listObjects(cli.resourceName); break;
   case  'access': setBucketPermissions(cli.resourceName); break;
   case  'policy': setBucketPolicy(cli.resourceName); break;
