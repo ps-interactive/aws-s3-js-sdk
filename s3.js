@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const { message } = require('./utils.js');
 
 const AWS = require('aws-sdk');
@@ -7,70 +10,44 @@ const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 const createBucket = (name) => {
   const params = { "Bucket": name, "ACL": "public-read" };
-  s3.createBucket(bucketParams, message);
+  s3.createBucket(params, message);
 };
 
 const listBuckets = (name) => {
-  s3.listBuckets((err, data) => {
-    if (err) { console.log("Error", err); } 
+  s3.listBuckets((err, data) => { 
+    if (err) { console.log("Error", err); }
     else { console.log("Success", data.Buckets); }
   });
 };
 
 const upload = (name) => {
-  // call S3 to retrieve upload file to specified bucket
-  var uploadParams = {Bucket: process.argv[2], Key: '', Body: ''};
-  var file = process.argv[3];
-
-  // Configure the file stream and obtain the upload parameters
-  var fs = require('fs');
-  var fileStream = fs.createReadStream(file);
-  fileStream.on('error', function(err) {
-    console.log('File Error', err);
-  });
+  const uploadParams = { "Bucket": process.argv[2], "Key": "", "Body": "" };
+  const fileStream = fs.createReadStream(name);
+  fileStream.on("error", err => console.log("File Error", err));
+  
   uploadParams.Body = fileStream;
-  var path = require('path');
-  uploadParams.Key = path.basename(file);
+  uploadParams.Key = path.basename(name);
 
-  // call S3 to retrieve upload file to specified bucket
-  s3.upload (uploadParams, function (err, data) {
-    if (err) {
-      console.log("Error", err);
-    } if (data) {
-      console.log("Upload Success", data.Location);
-    }
+  s3.upload(uploadParams,  (err, data) => {
+    if (err) { console.log("Error", err); } 
+    else if (data) { console.log("Upload Success", data.Location); }
   });
-
 };
 
 const listObjects = (name) => {
-  // Create the parameters for calling listObjects
-  var bucketParams = {
-    Bucket : 'BUCKET_NAME',
-  };
-
-  // Call S3 to obtain a list of the objects in the bucket
-  s3.listObjects(bucketParams, function(err, data) {
-    if (err) {
-      console.log("Error", err);
-    } else {
-      console.log("Success", data);
-    }
-  });
+  const params = { "Bucket": name };
+  s3.listObjects(params, message);
 };
 
 const setBucketPermissions = (name) => {
-  var bucketParams = {Bucket: process.argv[2]};
-  // call S3 to retrieve policy for selected bucket
-  s3.getBucketAcl(bucketParams, function(err, data) {
-    if (err) {
-      console.log("Error", err);
-    } else if (data) {
-      console.log("Success", data.Grants);
-    }
+  const params = { "Bucket": name };
+
+  s3.getBucketAcl(params, (err, data) => {
+    if (err) { console.log("Error", err); } 
+    else if (data) { console.log("Success", data.Grants); }
   });
 
-  var params = {
+  const aclParams = {
     Bucket: 'STRING_VALUE', // required
     ACL: private | public-read | public-read-write | authenticated-read,
     AccessControlPolicy: {
@@ -99,82 +76,40 @@ const setBucketPermissions = (name) => {
     GrantWrite: 'STRING_VALUE',
     GrantWriteACP: 'STRING_VALUE'
   };
-  s3.putBucketAcl(params, function(err, data) {
-    if (err) console.log(err, err.stack); // an error occurred
-    else     console.log(data);           // successful response
-  });
+  s3.putBucketAcl(aclParams, message);
 };
 
 const setBucketPolicy = (name) => {
-  var bucketParams = {Bucket: process.argv[2]};
-// call S3 to retrieve policy for selected bucket
-s3.getBucketPolicy(bucketParams, function(err, data) {
-  if (err) {
-    console.log("Error", err);
-  } else if (data) {
-    console.log("Success", data.Policy);
-  }
-});
+  const params = { "Bucket": name };
 
-// Load the AWS SDK for Node.js
-var AWS = require('aws-sdk');
-// Set the region 
-AWS.config.update({region: 'REGION'});
+  s3.getBucketPolicy(params, (err, data) => {
+    if (err) { console.log("Error", err); } 
+    else if (data) { console.log("Success", data.Policy); }
+  });
 
-// Create S3 service object
-s3 = new AWS.S3({apiVersion: '2006-03-01'});
+  const readOnlyAnonUserPolicy = {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "AddPerm",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": [ "s3:GetObject" ],
+        "Resource": [ "" ]
+      }
+    ]
+  };
 
-var readOnlyAnonUserPolicy = {
-  Version: "2012-10-17",
-  Statement: [
-    {
-      Sid: "AddPerm",
-      Effect: "Allow",
-      Principal: "*",
-      Action: [
-        "s3:GetObject"
-      ],
-      Resource: [
-        ""
-      ]
-    }
-  ]
-};
+  const bucketResource = "arn:aws:s3:::" + name + "/*";
+  readOnlyAnonUserPolicy.Statement[0].Resource[0] = bucketResource;
 
-// create selected bucket resource string for bucket policy
-var bucketResource = "arn:aws:s3:::" + process.argv[2] + "/*";
-readOnlyAnonUserPolicy.Statement[0].Resource[0] = bucketResource;
-
-// convert policy JSON into string and assign into params
-var bucketPolicyParams = {Bucket: process.argv[2], Policy: JSON.stringify(readOnlyAnonUserPolicy)};
-
-// set the new policy on the selected bucket
-s3.putBucketPolicy(bucketPolicyParams, function(err, data) {
-  if (err) {
-    // display error message
-    console.log("Error", err);
-  } else {
-    console.log("Success", data);
-  }
-});
+  const policyParams = { "Bucket": process.argv[2], "Policy": JSON.stringify(readOnlyAnonUserPolicy) };
+  s3.putBucketPolicy(policyParams, message);
 };
 
 const deleteBucket = (name) => {
-
-// Create params for S3.deleteBucket
-var bucketParams = {
-  Bucket : 'BUCKET_NAME'
-};
-
-// Call S3 to delete the bucket
-s3.deleteBucket(bucketParams, function(err, data) {
-  if (err) {
-    console.log("Error", err);
-  } else {
-    console.log("Success", data);
-  }
-});
-
+  const params = { "Bucket": name };
+  s3.deleteBucket(params, message);
 };
 
 
