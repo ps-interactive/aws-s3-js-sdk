@@ -8,16 +8,16 @@ AWS.config.update({region: 'us-west-2'});
 
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
-const createBucket = (name) => {
-  const params = { "Bucket": name, "ACL": "public-read" };
-  s3.createBucket(params, message);
-};
-
-const listBuckets = (name) => {
+const listBuckets = () => {
   s3.listBuckets((err, data) => { 
     if (err) { console.log("Error", err); }
     else { console.log("Success", data.Buckets); }
   });
+};
+
+const createBucket = (name) => {
+  const params = { "Bucket": name, "ACL": "public-read" };
+  s3.createBucket(params, message);
 };
 
 const upload = (name) => {
@@ -118,11 +118,12 @@ const deleteBucket = (name) => {
 ****/
 const cli = require('./cli.js');
 switch (cli.command) {
-  case 'create': createBucket(cli.resourceName); break;
-  case   'list': listBuckets(cli.resourceName); break;
-  case 'upload': upload(cli.resourceName); break;
-  case 'access': setBucketPermissions(cli.resourceName); break;
-  case 'policy': setBucketPolicy(cli.resourceName); break;
-  case 'delete': deleteBucket(cli.resourceName); break;
-  default      : console.error('Not a valid command!'); break;
+  case 'buckets': listBuckets(); break;
+  case  'create': createBucket(cli.resourceName); break;
+  case  'upload': upload(cli.resourceName); break;
+  case 'objects': listObjects(cli.resourceName); break;
+  case  'access': setBucketPermissions(cli.resourceName); break;
+  case  'policy': setBucketPolicy(cli.resourceName); break;
+  case  'delete': deleteBucket(cli.resourceName); break;
+  default       : console.error('Not a valid command!'); break;
 }
