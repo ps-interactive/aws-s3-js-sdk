@@ -30,7 +30,7 @@ const upload = (bucket, name) => {
 
   s3.upload(uploadParams,  (err, data) => {
     if (err) { console.log("Error", err); } 
-    else if (data) { console.log("Upload Success", data.Location); }
+    else { console.log("Upload Success", data.Location); }
   });
 };
 
@@ -44,7 +44,7 @@ const getBucketPermissions = (name) => {
 
   s3.getBucketAcl(params, (err, data) => {
     if (err) { console.log("Error", err); }
-    else if (data) { console.log("Success", data.Grants); }
+    else { console.log("Success", data.Grants); }
   });
 };
 
@@ -86,7 +86,7 @@ const getBucketPolicy = (name) => {
 
   s3.getBucketPolicy(params, (err, data) => {
     if (err) { console.log("Error", err); }
-    else if (data) { console.log("Success", data.Policy); }
+    else { console.log("Success", data.Policy); }
   });
 };
 
