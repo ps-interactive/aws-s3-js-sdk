@@ -10,3 +10,7 @@ const message = (err, data) => {
     console.log(`Success: ${json}`);
   }
 };
+
+const readJSON = (filename) => fs.existsSync(`json/${filename}.json`) ? JSON.parse(fs.readFileSync(`json/${filename}.json`)) : undefined;
+
+module.exports = { message, readJSON };

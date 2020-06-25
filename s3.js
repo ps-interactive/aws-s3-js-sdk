@@ -21,14 +21,14 @@ const createBucket = (name) => {
 };
 
 const upload = (bucket, name) => {
-  const uploadParams = { "Bucket": bucket, "Key": "", "Body": "" };
+  const params = { "Bucket": bucket, "Key": "", "Body": "" };
   const fileStream = fs.createReadStream(name);
   fileStream.on("error", err => console.log("File Error", err));
   
-  uploadParams.Body = fileStream;
-  uploadParams.Key = path.basename(name);
+  params.Body = fileStream;
+  params.Key = path.basename(name);
 
-  s3.upload(uploadParams,  (err, data) => {
+  s3.upload(params,  (err, data) => {
     if (err) { console.log("Error", err); } 
     else { console.log("Upload Success", data.Location); }
   });
@@ -36,7 +36,10 @@ const upload = (bucket, name) => {
 
 const listObjects = (name) => {
   const params = { "Bucket": name };
-  s3.listObjects(params, message);
+  s3.listObjects(params, (err, data) => {
+    if (err) { console.log("Error", err); }
+    else { console.log("Success", data); }
+  });
 };
 
 const getBucketPermissions = (name) => {
@@ -48,35 +51,12 @@ const getBucketPermissions = (name) => {
   });
 };
 
-const setBucketPermissions = (name) => {
+const setBucketPermissions = (name, acl, filename) => {
+  const policy = readJSON(filename);
   const aclParams = {
-    Bucket: 'STRING_VALUE', // required
-    ACL: private | public-read | public-read-write | authenticated-read,
-    AccessControlPolicy: {
-      Grants: [
-        {
-          Grantee: {
-            Type: CanonicalUser | AmazonCustomerByEmail | Group, // required
-            DisplayName: 'STRING_VALUE',
-            EmailAddress: 'STRING_VALUE',
-            ID: 'STRING_VALUE',
-            URI: 'STRING_VALUE'
-          },
-          Permission: FULL_CONTROL | WRITE | WRITE_ACP | READ | READ_ACP
-        },
-        // more items
-      ],
-      Owner: {
-        DisplayName: 'STRING_VALUE',
-        ID: 'STRING_VALUE'
-      }
-    },
-    ContentMD5: 'STRING_VALUE',
-    GrantFullControl: 'STRING_VALUE',
-    GrantRead: 'STRING_VALUE',
-    GrantReadACP: 'STRING_VALUE',
-    GrantWrite: 'STRING_VALUE',
-    GrantWriteACP: 'STRING_VALUE'
+    Bucket: name,
+    ACL: acl,
+    AccessControlPolicy: policy
   };
   s3.putBucketAcl(aclParams, message);
 };
