@@ -39,14 +39,16 @@ const listObjects = (name) => {
   s3.listObjects(params, message);
 };
 
-const setBucketPermissions = (name) => {
+const getBucketPermissions = (name) => {
   const params = { "Bucket": name };
 
   s3.getBucketAcl(params, (err, data) => {
-    if (err) { console.log("Error", err); } 
+    if (err) { console.log("Error", err); }
     else if (data) { console.log("Success", data.Grants); }
   });
+};
 
+const setBucketPermissions = (name) => {
   const aclParams = {
     Bucket: 'STRING_VALUE', // required
     ACL: private | public-read | public-read-write | authenticated-read,
@@ -79,14 +81,16 @@ const setBucketPermissions = (name) => {
   s3.putBucketAcl(aclParams, message);
 };
 
-const setBucketPolicy = (name) => {
+const getBucketPolicy = (name) => {
   const params = { "Bucket": name };
 
   s3.getBucketPolicy(params, (err, data) => {
-    if (err) { console.log("Error", err); } 
+    if (err) { console.log("Error", err); }
     else if (data) { console.log("Success", data.Policy); }
   });
+};
 
+const setBucketPolicy = (name) => {
   const readOnlyAnonUserPolicy = {
     "Version": "2012-10-17",
     "Statement": [
@@ -122,8 +126,10 @@ switch (cli.command) {
   case  'create': createBucket(cli.resourceName); break;
   case  'upload': upload(cli.resourceName, cli.secondaryResource); break;
   case 'objects': listObjects(cli.resourceName); break;
-  case  'access': setBucketPermissions(cli.resourceName); break;
-  case  'policy': setBucketPolicy(cli.resourceName); break;
+  case  'getacl': getBucketPermissions(cli.resourceName); break;
+  case  'setacl': setBucketPermissions(cli.resourceName); break;
+  case  'getpolicy': getBucketPolicy(cli.resourceName); break;
+  case  'setpolicy': setBucketPolicy(cli.resourceName); break;
   case  'delete': deleteBucket(cli.resourceName); break;
   default       : console.error('Not a valid command!'); break;
 }
