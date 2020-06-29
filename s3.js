@@ -4,9 +4,10 @@ const path = require('path');
 const { message } = require('./utils.js');
 
 const AWS = require('aws-sdk');
-AWS.config.update({region: 'us-west-2'});
+AWS.config.region = 'us-west-2';
+AWS.config.apiVersions = { 's3': '2006-03-01' };
 
-const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+const s3 = new AWS.S3();
 
 const listBuckets = () => {
   s3.listBuckets((err, data) => { 
@@ -16,8 +17,7 @@ const listBuckets = () => {
 };
 
 const createBucket = (name) => {
-  const params = { "Bucket": name };
-  s3.createBucket(params, message);
+  s3.createBucket({ "Bucket": name }, message);
 };
 
 const upload = (bucket, name) => {
@@ -35,39 +35,23 @@ const upload = (bucket, name) => {
 };
 
 const listObjects = (name) => {
-  const params = { "Bucket": name };
-  s3.listObjects(params, (err, data) => {
-    if (err) { console.log("Error", err); }
-    else { console.log("Success", data); }
-  });
+  s3.listObjects({ "Bucket": name }, message);
 };
 
 const getBucketPermissions = (name) => {
-  const params = { "Bucket": name };
+  const params = ;
 
-  s3.getBucketAcl(params, (err, data) => {
-    if (err) { console.log("Error", err); }
-    else { console.log("Success", data.Grants); }
-  });
+  s3.getBucketAcl({ "Bucket": name }, message);
 };
 
 const setBucketPermissions = (name, acl, filename) => {
   const policy = readJSON(filename);
-  const aclParams = {
-    Bucket: name,
-    ACL: acl,
-    AccessControlPolicy: policy
-  };
+  const aclParams = { "Bucket": name, "ACL": acl, "AccessControlPolicy": policy };
   s3.putBucketAcl(aclParams, message);
 };
 
 const getBucketPolicy = (name) => {
-  const params = { "Bucket": name };
-
-  s3.getBucketPolicy(params, (err, data) => {
-    if (err) { console.log("Error", err); }
-    else { console.log("Success", data.Policy); }
-  });
+  s3.getBucketPolicy({ "Bucket": name }, message);
 };
 
 const setBucketPolicy = (name) => {
