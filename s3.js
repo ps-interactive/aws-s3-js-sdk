@@ -39,8 +39,6 @@ const listObjects = (name) => {
 };
 
 const getBucketPermissions = (name) => {
-  const params = ;
-
   s3.getBucketAcl({ "Bucket": name }, message);
 };
 
