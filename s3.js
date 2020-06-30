@@ -12,9 +12,9 @@ const { message } = require('./utils.js');
 /**********
  Functions 
 **********/
-const listBuckets = () => {};
-
 const createBucket = (name) => {};
+
+const listBuckets = () => {};
 
 const upload = (name, filename) => {};
 
