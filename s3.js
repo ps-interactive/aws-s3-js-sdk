@@ -8,7 +8,6 @@ const { message, readJSON } = require('./utils.js');
 ******************/
 
 
-
 /**********
  Functions 
 **********/
@@ -19,10 +18,6 @@ const listBuckets = () => {};
 const upload = (name, filename) => {};
 
 const listObjects = (name) => {};
-
-const getBucketPermissions = (name) => {};
-
-const setBucketPermissions = (name, filename, acl) => {};
 
 const getBucketPolicy = (name) => {};
 
@@ -40,8 +35,6 @@ switch (cli.command) {
   case    'create': createBucket(cli.resourceName); break;
   case    'upload': upload(cli.resourceName, cli.filename); break;
   case   'objects': listObjects(cli.resourceName); break;
-  case    'getacl': getBucketPermissions(cli.resourceName); break;
-  case    'setacl': setBucketPermissions(cli.resourceName, cli.filename, cli.acl); break;
   case 'getpolicy': getBucketPolicy(cli.resourceName); break;
   case 'setpolicy': setBucketPolicy(cli.resourceName, cli.filename); break;
   case    'delete': deleteBucket(cli.resourceName); break;
