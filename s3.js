@@ -11,7 +11,7 @@ const { message, readJSON } = require('./utils.js');
 /**********
  Functions 
 **********/
-const createBucket = (name) => {};
+const createBucket = (name, acl) => {};
 
 const listBuckets = () => {};
 
@@ -32,11 +32,11 @@ const deleteBucket = (name) => {};
 const cli = require('./cli.js');
 switch (cli.command) {
   case   'buckets': listBuckets(); break;
-  case    'create': createBucket(cli.resourceName); break;
-  case    'upload': upload(cli.resourceName, cli.filename); break;
-  case   'objects': listObjects(cli.resourceName); break;
-  case 'getpolicy': getBucketPolicy(cli.resourceName); break;
-  case 'setpolicy': setBucketPolicy(cli.resourceName, cli.filename); break;
-  case    'delete': deleteBucket(cli.resourceName); break;
+  case    'create': createBucket(cli.resource, cli.file_acl); break;
+  case    'upload': upload(cli.resource, cli.file_acl); break;
+  case   'objects': listObjects(cli.resource); break;
+  case 'getpolicy': getBucketPolicy(cli.resource); break;
+  case 'setpolicy': setBucketPolicy(cli.resource, cli.file_acl); break;
+  case    'delete': deleteBucket(cli.resource); break;
   default         : console.error('Not a valid command!'); break;
 }
