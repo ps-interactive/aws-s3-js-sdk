@@ -38,7 +38,7 @@ const cli = require('./cli.js');
 switch (cli.command) {
   case   'buckets': listBuckets(); break;
   case    'create': createBucket(cli.resourceName); break;
-  case    'upload': upload(cli.resourceName, cli.secondaryResource); break;
+  case    'upload': upload(cli.resourceName, cli.filename); break;
   case   'objects': listObjects(cli.resourceName); break;
   case    'getacl': getBucketPermissions(cli.resourceName); break;
   case    'setacl': setBucketPermissions(cli.resourceName, cli.filename, cli.acl); break;
