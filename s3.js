@@ -21,25 +21,11 @@ const listObjects = (name) => {};
 
 const getBucketPolicy = (name) => {};
 
-const setBucketPolicy = (name, filename) => {
-  const policy = readJSON(filename);
-  if (policy) {
-    policy.Statement[0].Resource[0] = "arn:aws:s3:::" + name + "/*";
-    const params = { "Bucket": name, "Policy": JSON.stringify(policy) };
-    s3.putBucketPolicy(params, message);
-  } else {
-    console.log(`There was an error reading the file config/${filename}.json`);
-  }
-};
+const setBucketPolicy = (name, filename) => {};
 
-const getBucketPolicy = (name) => {
-  s3.getBucketPolicy({ "Bucket": name }, message);
-};
+const getBucketPolicy = (name) => {};
 
-const deleteBucket = (name) => {
-  const params = { "Bucket": name };
-  s3.deleteBucket(params, message);
-};
+const deleteBucket = (name) => {};
 
 /****
  CLI 
