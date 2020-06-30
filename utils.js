@@ -5,6 +5,7 @@ const message = (err, data) => {
   else if (data) { console.log(`Success: ${JSON.stringify(data, null, 2)}`); }
 };
 
-const readJSON = (filename) => fs.existsSync(`config/${filename}.json`) ? JSON.parse(fs.readFileSync(`config/${filename}.json`)) : undefined;
+const readJSON = (filename) => fs.existsSync(`policies/${filename}.json`) ? JSON.parse(fs.readFileSync(`policies/${filename}.json`)) : undefined;
 
 module.exports = { message, readJSON };
+
