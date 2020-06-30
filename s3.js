@@ -38,39 +38,19 @@ const listObjects = (name) => {
   s3.listObjects({ "Bucket": name }, message);
 };
 
-const getBucketPermissions = (name) => {
-  s3.getBucketAcl({ "Bucket": name }, message);
-};
-
-const setBucketPermissions = (name, acl, filename) => {
+const setBucketPolicy = (name, filename) => {
   const policy = readJSON(filename);
-  const aclParams = { "Bucket": name, "ACL": acl, "AccessControlPolicy": policy };
-  s3.putBucketAcl(aclParams, message);
+  if (policy) {
+    policy.Statement[0].Resource[0] = "arn:aws:s3:::" + name + "/*";
+    const params = { "Bucket": name, "Policy": JSON.stringify(policy) };
+    s3.putBucketPolicy(params, message);
+  } else {
+    console.log(`There was an error reading the file config/${filename}.json`);
+  }
 };
 
 const getBucketPolicy = (name) => {
   s3.getBucketPolicy({ "Bucket": name }, message);
-};
-
-const setBucketPolicy = (name) => {
-  const readOnlyAnonUserPolicy = {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Sid": "AddPerm",
-        "Effect": "Allow",
-        "Principal": "*",
-        "Action": [ "s3:GetObject" ],
-        "Resource": [ "" ]
-      }
-    ]
-  };
-
-  const bucketResource = "arn:aws:s3:::" + name + "/*";
-  readOnlyAnonUserPolicy.Statement[0].Resource[0] = bucketResource;
-
-  const policyParams = { "Bucket": process.argv[2], "Policy": JSON.stringify(readOnlyAnonUserPolicy) };
-  s3.putBucketPolicy(policyParams, message);
 };
 
 const deleteBucket = (name) => {
@@ -84,14 +64,12 @@ const deleteBucket = (name) => {
 ****/
 const cli = require('./cli.js');
 switch (cli.command) {
-  case 'buckets': listBuckets(); break;
-  case  'create': createBucket(cli.resourceName); break;
-  case  'upload': upload(cli.resourceName, cli.secondaryResource); break;
-  case 'objects': listObjects(cli.resourceName); break;
-  case  'getacl': getBucketPermissions(cli.resourceName); break;
-  case  'setacl': setBucketPermissions(cli.resourceName); break;
-  case  'getpolicy': getBucketPolicy(cli.resourceName); break;
-  case  'setpolicy': setBucketPolicy(cli.resourceName); break;
-  case  'delete': deleteBucket(cli.resourceName); break;
-  default       : console.error('Not a valid command!'); break;
+  case   'buckets': listBuckets(); break;
+  case    'create': createBucket(cli.resource, cli.file_acl); break;
+  case    'upload': upload(cli.resource, cli.file_acl); break;
+  case   'objects': listObjects(cli.resource); break;
+  case 'getpolicy': getBucketPolicy(cli.resource); break;
+  case 'setpolicy': setBucketPolicy(cli.resource, cli.file_acl); break;
+  case    'delete': deleteBucket(cli.resource); break;
+  default         : console.error('Not a valid command!'); break;
 }
