@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { message } = require('./utils.js');
+const { message, readJSON } = require('./utils.js');
 
 /******************
  AWS Configuration 
