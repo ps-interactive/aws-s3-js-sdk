@@ -26,7 +26,7 @@ const setBucketPermissions = (name, filename, acl) => {};
 
 const getBucketPolicy = (name) => {};
 
-const setBucketPolicy = (name) => {};
+const setBucketPolicy = (name, filename) => {};
 
 const deleteBucket = (name) => {};
 
@@ -43,7 +43,7 @@ switch (cli.command) {
   case    'getacl': getBucketPermissions(cli.resourceName); break;
   case    'setacl': setBucketPermissions(cli.resourceName, cli.filename, cli.acl); break;
   case 'getpolicy': getBucketPolicy(cli.resourceName); break;
-  case 'setpolicy': setBucketPolicy(cli.resourceName); break;
+  case 'setpolicy': setBucketPolicy(cli.resourceName, cli.filename); break;
   case    'delete': deleteBucket(cli.resourceName); break;
   default         : console.error('Not a valid command!'); break;
 }
