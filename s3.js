@@ -23,7 +23,7 @@ const setBucketPolicy = (name, filename) => {};
 
 const getBucketPolicy = (name) => {};
 
-const deleteBucket = (name) => {};
+const deleteBucket = async (name) => {};
 
 /****
  CLI 
