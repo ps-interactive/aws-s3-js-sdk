@@ -19,9 +19,9 @@ const upload = (name, filename) => {};
 
 const listObjects = (name) => {};
 
-const getBucketPolicy = (name) => {};
-
 const setBucketPolicy = (name, filename) => {};
+
+const getBucketPolicy = (name) => {};
 
 const deleteBucket = (name) => {};
 
@@ -34,8 +34,8 @@ switch (cli.command) {
   case    'create': createBucket(cli.resource, cli.file_acl); break;
   case    'upload': upload(cli.resource, cli.file_acl); break;
   case   'objects': listObjects(cli.resource); break;
-  case 'getpolicy': getBucketPolicy(cli.resource); break;
   case 'setpolicy': setBucketPolicy(cli.resource, cli.file_acl); break;
+  case 'getpolicy': getBucketPolicy(cli.resource); break;
   case    'delete': deleteBucket(cli.resource); break;
   default         : console.error('Not a valid command!'); break;
 }
