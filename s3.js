@@ -1,37 +1,33 @@
 const fs = require('fs');
 const path = require('path');
 
-const { message } = require('./utils.js');
+const { message, readJSON, emptyBucket } = require('./utils.js');
 
+/******************
+ AWS Configuration 
+******************/
 const AWS = require('aws-sdk');
 AWS.config.region = 'us-west-2';
 AWS.config.apiVersions = { 's3': '2006-03-01' };
 
 const s3 = new AWS.S3();
 
+/**********
+ Functions 
+**********/
+const createBucket = (name, acl) => {
+ s3.createBucket({"Bucket": name, "ACL": acl}, message);
+};
+
 const listBuckets = () => {
-  s3.listBuckets((err, data) => { 
-    if (err) { console.log("Error", err); }
-    else { console.log("Success", data.Buckets); }
-  });
+ s3.listBuckets(message);
 };
 
-const createBucket = (name) => {
-  s3.createBucket({ "Bucket": name }, message);
-};
-
-const upload = (bucket, name) => {
-  const params = { "Bucket": bucket, "Key": "", "Body": "" };
-  const fileStream = fs.createReadStream(name);
+const upload = (name, filename) => {
+  const fileStream = fs.createReadStream(filename);
   fileStream.on("error", err => console.log("File Error", err));
-  
-  params.Body = fileStream;
-  params.Key = path.basename(name);
-
-  s3.upload(params,  (err, data) => {
-    if (err) { console.log("Error", err); } 
-    else { console.log("Upload Success", data.Location); }
-  });
+  const params = { "Bucket": name, "Key": path.basename(filename), "Body": fileStream };
+  s3.upload(params, message);
 };
 
 const listObjects = (name) => {
@@ -41,7 +37,7 @@ const listObjects = (name) => {
 const setBucketPolicy = (name, filename) => {
   const policy = readJSON(filename);
   if (policy) {
-    policy.Statement[0].Resource[0] = "arn:aws:s3:::" + name + "/*";
+    policy.Statement[0].Resource[0] = `arn:aws:s3:::${name}/*`;
     const params = { "Bucket": name, "Policy": JSON.stringify(policy) };
     s3.putBucketPolicy(params, message);
   } else {
@@ -50,14 +46,17 @@ const setBucketPolicy = (name, filename) => {
 };
 
 const getBucketPolicy = (name) => {
-  s3.getBucketPolicy({ "Bucket": name }, message);
+  s3.getBucketPolicy({"Bucket": name}, message);
 };
 
-const deleteBucket = (name) => {
-  const params = { "Bucket": name };
-  s3.deleteBucket(params, message);
+const deleteBucket = async (name) => {
+  const empty = await emptyBucket(name);
+  if (empty) {
+    s3.deleteBucket({"Bucket": name}, message);
+  } else {
+    console.log(`There was an error emptying the ${name} bucket.`);
+  }
 };
-
 
 /****
  CLI 
@@ -68,8 +67,8 @@ switch (cli.command) {
   case    'create': createBucket(cli.resource, cli.file_acl); break;
   case    'upload': upload(cli.resource, cli.file_acl); break;
   case   'objects': listObjects(cli.resource); break;
-  case 'getpolicy': getBucketPolicy(cli.resource); break;
   case 'setpolicy': setBucketPolicy(cli.resource, cli.file_acl); break;
+  case 'getpolicy': getBucketPolicy(cli.resource); break;
   case    'delete': deleteBucket(cli.resource); break;
   default         : console.error('Not a valid command!'); break;
 }
