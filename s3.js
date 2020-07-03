@@ -23,8 +23,6 @@ const getBucketPolicy = (name) => {};
 
 const setBucketPolicy = (name, filename) => {};
 
-const getBucketPolicy = (name) => {};
-
 const deleteBucket = (name) => {};
 
 /****
